@@ -1,9 +1,8 @@
 import 'package:currency_converter/core/error/exception_handler_mixin.dart';
-import 'package:currency_converter/core/error/failure.dart';
+import 'package:currency_converter/core/secrets/app_secrets.dart';
 import 'package:currency_converter/core/utils/constants.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:fpdart/fpdart.dart';
 
 abstract class NetworkService {
   String get baseUrl;
@@ -12,12 +11,12 @@ abstract class NetworkService {
 
   void updateHeader(Map<String, dynamic> data);
 
-  Future<Either<BaseException, Response>> get(
+  Future<Response> get(
     String endpoint, {
     Map<String, dynamic>? queryParameters,
   });
 
-  Future<Either<BaseException, Response>> post(
+  Future<Response> post(
     String endpoint, {
     Map<String, dynamic>? data,
   });
@@ -32,8 +31,7 @@ class DioNetworkService extends NetworkService with ExceptionHandlerMixin {
     }
   }
 
-  BaseOptions get dioBaseOptions => BaseOptions(
-        baseUrl: baseUrl,
+  Options get dioBaseOptions => Options(
         headers: headers,
       );
   @override
@@ -43,6 +41,7 @@ class DioNetworkService extends NetworkService with ExceptionHandlerMixin {
   Map<String, Object> get headers => {
         'accept': 'application/json',
         'content-type': 'application/json',
+        'apikey': AppSecrets.apiKey
       };
 
   @override
@@ -54,8 +53,7 @@ class DioNetworkService extends NetworkService with ExceptionHandlerMixin {
   }
 
   @override
-  Future<Either<BaseException, Response>> post(String endpoint,
-      {Map<String, dynamic>? data}) {
+  Future<Response> post(String endpoint, {Map<String, dynamic>? data}) {
     final res = handleException(
       () => dio.post(
         endpoint,
@@ -67,13 +65,18 @@ class DioNetworkService extends NetworkService with ExceptionHandlerMixin {
   }
 
   @override
-  Future<Either<BaseException, Response>> get(String endpoint,
+  Future<Response> get(String endpoint,
       {Map<String, dynamic>? queryParameters}) {
     final res = handleException(
-      () => dio.get(
-        endpoint,
-        queryParameters: queryParameters,
-      ),
+      () {
+        return dio.get(baseUrl + endpoint,
+            queryParameters: queryParameters, options: dioBaseOptions);
+      },
+
+      // => dio.get(
+      //   endpoint,
+      //   queryParameters: queryParameters,
+      // ),
       endpoint: endpoint,
     );
     return res;

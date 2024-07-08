@@ -1,21 +1,24 @@
-import 'package:currency_converter/core/error/failure.dart';
-import 'package:currency_converter/features/home/data/datasource/home_remote_data_source.dart';
-import 'package:currency_converter/features/home/domain/repositories/home_repository.dart';
-import 'package:fpdart/fpdart.dart';
+import 'package:currency_converter/features/home/data/datasource/currency_remote_data_source.dart';
+import 'package:currency_converter/features/home/domain/entities/currency_exchange_rate.dart';
+import 'package:currency_converter/features/home/domain/entities/symbol.dart';
+import 'package:currency_converter/features/home/domain/repositories/currency_repository.dart';
 
-class HomeRepositoryImpl implements HomeRepository {
-  final HomeRemoteDataSource homeRemoteDataSource;
-  HomeRepositoryImpl(this.homeRemoteDataSource);
+class HomeRepositoryImpl implements CurrencyRepository {
+  final RemoteCurrencyDataSource remoteCurrencyDataSource;
+
+  const HomeRepositoryImpl({
+    required this.remoteCurrencyDataSource,
+  });
 
   @override
-  Future<Either<BaseException, String>> getLatest() {
-    // TODO: implement getLatest
-    throw UnimplementedError();
+  Future<CurrencyExchangeRates> getLatest({
+    String baseCurrency = 'inr',
+  }) {
+    return remoteCurrencyDataSource.getLatest(baseCurrency: baseCurrency);
   }
 
   @override
-  Future<Either<BaseException, String>> getSymbols() {
-    // TODO: implement getSymbols
-    throw UnimplementedError();
+  Future<List<CurrencySymbol>> getSymbols() {
+    return remoteCurrencyDataSource.getSymbols();
   }
 }
