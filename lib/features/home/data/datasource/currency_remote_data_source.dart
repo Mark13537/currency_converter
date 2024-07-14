@@ -31,7 +31,9 @@ class RemoteCurrencyDataSourceImpl implements RemoteCurrencyDataSource {
     );
 
     if (response.statusCode == 200) {
-      final data = response.data['rates'] as Map<String, dynamic>;
+      final dataMap = response.data as Map<String, dynamic>;
+      final data = dataMap['rates'] as Map<String, dynamic>;
+
       final rates = <RateModel>[];
 
       data.forEach(
@@ -46,7 +48,7 @@ class RemoteCurrencyDataSourceImpl implements RemoteCurrencyDataSource {
       );
 
       exchangesRateModel = CurrencyExchangesRateModel(
-        currencyName: response.data['base'] as String,
+        currencyName: dataMap['base'] as String,
         exchangeRates: rates,
       );
     }
@@ -62,7 +64,8 @@ class RemoteCurrencyDataSourceImpl implements RemoteCurrencyDataSource {
     );
 
     if (response.statusCode == 200) {
-      final data = response.data['symbols'] as Map<String, dynamic>;
+      final dataMap = response.data as Map<String, dynamic>;
+      final data = dataMap['symbols'] as Map<String, dynamic>;
 
       data.forEach(
         (key, value) {
